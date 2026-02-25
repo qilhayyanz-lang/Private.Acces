@@ -97,8 +97,6 @@ input, textarea{
 <body>
 
 <canvas id="fireworks"></canvas>
-
-<!-- AUDIO -->
 <audio id="bgMusic" src="takterganti.mp3"></audio>
 
 <!-- STEP 1 -->
@@ -130,11 +128,10 @@ input, textarea{
 <div class="container hidden" id="bagian2">
     <div class="fadeText">
         <h2>
-            Aku tau kadang kamu capek… <br><br>
-            Kamu nggak harus hadapin semuanya sendirian 🤍
-            kamu nggak perlu terlalu over mikirin soal kuliah ya...
-            kamu hebat berani ambil keputusan sendiri tanpa harus di suruh orang lain...
-            aku bangga sama kamuu...
+            Aku tau jadi anak bungsu itu kadang capek... 🤍 <br><br>
+            Soal kuliah, soal masa depan, soal ekspektasi orang.
+            Tapi kamu hebat karena tetap jalan terus.
+            Aku bangga sama kamu.
         </h2>
         <button class="next" onclick="keBagian3()">Selanjutnya</button>
     </div>
@@ -155,7 +152,6 @@ input, textarea{
 <div class="container hidden" id="bagian4">
     <div class="fadeText">
         <h2>Kamu boleh cerita semuanya di sini 🤍</h2>
-
         <form id="curhatForm">
             <textarea name="curhat" placeholder="Tulis semua yang kamu rasakan di sini..." required></textarea>
             <br><br>
@@ -169,9 +165,15 @@ input, textarea{
     <div class="fadeText">
         <h2>
             Terima kasih sudah berbagi 🤍 <br><br>
-            Proyek kecil kita selesai…  
-            tapi aku tetap ada untuk kamu ✨
+            Kamu nggak sendirian.  
+            Masa depan kamu tetap indah.
         </h2>
+
+        <div id="hasilCurhat" style="margin-top:20px; font-style:italic;"></div>
+
+        <h3 style="margin-top:25px;">
+            Proyek kecil kita selesai… ✨
+        </h3>
     </div>
 </div>
 
@@ -199,7 +201,7 @@ function getToken(){
     window.open("https://wa.me/6285184619598","_blank");
 }
 
-const kalimat="Aku denger kamu lagi mikirin soal kuliah dan masalah jadi anak bungsu yaahh??";
+const kalimat="Aku denger kamu lagi mikirin soal kuliah dan jadi anak bungsu yaahh??";
 let i=0;
 
 function ketik(){
@@ -222,15 +224,45 @@ function keBagian4(){
     music.loop=true;
 }
 
-document.getElementById("curhatForm").addEventListener("submit",function(e){
+document.getElementById("curhatForm").addEventListener("submit", function(e){
     e.preventDefault();
-    music.pause();
-    music.currentTime=0;
-    bagian4.classList.add("hidden");
-    terakhir.classList.remove("hidden");
+
+    const form = this;
+    const isi = form.curhat.value;
+
+    if(isi.trim()===""){
+        alert("Cerita dulu yaa 🤍");
+        return;
+    }
+
+    fetch("https://formspree.io/f/mjgejqeg", {
+        method: "POST",
+        body: new FormData(form),
+        headers: { "Accept": "application/json" }
+    })
+    .then(response => {
+        if(response.ok){
+
+            music.pause();
+            music.currentTime=0;
+
+            bagian4.classList.add("hidden");
+            terakhir.classList.remove("hidden");
+
+            document.getElementById("hasilCurhat").innerHTML =
+                "<b>Curhatan kamu:</b><br><br>" + isi;
+
+            form.reset();
+        } else {
+            alert("Gagal mengirim 😢");
+        }
+    })
+    .catch(() => {
+        alert("Gagal mengirim 😢");
+    });
 });
 
-/* FIREWORK (tetap sama smooth) */
+/* FIREWORK */
 const canvas=document.getElementById("fireworks");
 const ctx=canvas.getContext("2d");
 
