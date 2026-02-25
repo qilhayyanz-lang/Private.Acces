@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Access 🤍</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(-45deg,#2c3e50,#4ca1af,#6a11cb,#2575fc,#ff758c,#ff7eb3);
+    background-size:400% 400%;
+    animation:gradientFlow 18s ease infinite;
+    color:white;
+    text-align:center;
+    overflow:hidden;
+    position:relative;
+}
+
+@keyframes gradientFlow{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:0;
+    pointer-events:none;
+}
+
+.container{
+    position:relative;
+    z-index:2;
+    background:rgba(255,255,255,0.1);
+    padding:30px;
+    border-radius:25px;
+    backdrop-filter:blur(15px);
+    width:90%;
+    max-width:520px;
+    box-shadow:0 0 50px rgba(0,0,0,0.4);
+    animation:fadeIn 1.5s ease;
+}
+
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    margin:10px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+button:hover{ transform:scale(1.1); }
+
+input, textarea{
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    width:85%;
+    margin-top:10px;
+}
+
+.hidden{ display:none; }
+
+.fadeText{
+    animation:fadeUp 1.5s ease forwards;
+    opacity:0;
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.yes{ background:#ff6b81; color:white; }
+.no{ background:#576574; color:white; }
+.next{ background:#00c6ff; color:white; }
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<!-- AUDIO -->
+<audio id="bgMusic" src="takterganti.mp3"></audio>
+
+<!-- STEP 1 -->
+<div class="container" id="step1">
+    <h2>Apakah Anda orang yang dituju oleh Developer?</h2>
+    <button onclick="verifikasi()">Verifikasi</button>
+</div>
+
+<!-- STEP 2 -->
+<div class="container hidden" id="step2">
+    <h2>Masukan Token yang Diberi</h2>
+    <input type="text" id="tokenInput" placeholder="Masukan token...">
+    <br>
+    <button onclick="cekToken()">Masuk</button>
+    <br>
+    <button onclick="getToken()">Dapatkan Token</button>
+</div>
+
+<!-- BAGIAN 1 -->
+<div class="container hidden" id="bagian1">
+    <h2 id="text"></h2>
+    <div id="buttons" class="hidden">
+        <button class="yes" onclick="lanjut()">Iyaa</button>
+        <button class="no">Tidak</button>
+    </div>
+</div>
+
+<!-- BAGIAN 2 -->
+<div class="container hidden" id="bagian2">
+    <div class="fadeText">
+        <h2>
+            Aku tau kadang kamu capek… <br><br>
+            Kamu nggak harus hadapin semuanya sendirian 🤍
+            kamu nggak perlu terlalu over mikirin soal kuliah ya...
+            kamu hebat berani ambil keputusan sendiri tanpa harus di suruh orang lain...
+            aku bangga sama kamuu...
+        </h2>
+        <button class="next" onclick="keBagian3()">Selanjutnya</button>
+    </div>
+</div>
+
+<!-- BAGIAN 3 -->
+<div class="container hidden" id="bagian3">
+    <div class="fadeText">
+        <h2>
+            Kalau masih ada yang kamu pendam…  
+            kamu boleh cerita di sini 🤍
+        </h2>
+        <button class="next" onclick="keBagian4()">Lanjut Curhat</button>
+    </div>
+</div>
+
+<!-- BAGIAN 4 CURHAT -->
+<div class="container hidden" id="bagian4">
+    <div class="fadeText">
+        <h2>Kamu boleh cerita semuanya di sini 🤍</h2>
+
+        <form id="curhatForm">
+            <textarea name="curhat" placeholder="Tulis semua yang kamu rasakan di sini..." required></textarea>
+            <br><br>
+            <button type="submit" class="next">Kirim Curhat 🤍</button>
+        </form>
+    </div>
+</div>
+
+<!-- TERAKHIR -->
+<div class="container hidden" id="terakhir">
+    <div class="fadeText">
+        <h2>
+            Terima kasih sudah berbagi 🤍 <br><br>
+            Proyek kecil kita selesai…  
+            tapi aku tetap ada untuk kamu ✨
+        </h2>
+    </div>
+</div>
+
+<script>
+const music=document.getElementById("bgMusic");
+
+function verifikasi(){
+    step1.classList.add("hidden");
+    step2.classList.remove("hidden");
+}
+
+const SECRET_TOKEN="Mutiara Nava Artika";
+
+function cekToken(){
+    if(tokenInput.value===SECRET_TOKEN){
+        step2.classList.add("hidden");
+        bagian1.classList.remove("hidden");
+        ketik();
+    }else{
+        alert("Token salah 😢");
+    }
+}
+
+function getToken(){
+    window.open("https://wa.me/6285184619598","_blank");
+}
+
+const kalimat="Aku denger kamu lagi mikirin soal kuliah dan masalah jadi anak bungsu yaahh??";
+let i=0;
+
+function ketik(){
+    if(i<kalimat.length){
+        text.innerHTML+=kalimat.charAt(i);
+        i++;
+        setTimeout(ketik,40);
+    }else{
+        buttons.classList.remove("hidden");
+    }
+}
+
+function lanjut(){ bagian1.classList.add("hidden"); bagian2.classList.remove("hidden"); }
+function keBagian3(){ bagian2.classList.add("hidden"); bagian3.classList.remove("hidden"); }
+
+function keBagian4(){
+    bagian3.classList.add("hidden");
+    bagian4.classList.remove("hidden");
+    music.play();
+    music.loop=true;
+}
+
+document.getElementById("curhatForm").addEventListener("submit",function(e){
+    e.preventDefault();
+    music.pause();
+    music.currentTime=0;
+    bagian4.classList.add("hidden");
+    terakhir.classList.remove("hidden");
+});
+
+/* FIREWORK (tetap sama smooth) */
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+const words=["Mutiara","Nava","Artika"];
+let wordIndex=0;
+let rockets=[];
+let particles=[];
+
+function randomColor(){
+  const colors=["#ff6b81","#ff9ff3","#feca57","#48dbfb","#1dd1a1","#a29bfe"];
+  return colors[Math.floor(Math.random()*colors.length)];
+}
+
+function launchFirework(){
+  const text=words[wordIndex];
+  wordIndex=(wordIndex+1)%words.length;
+
+  const safeZone=canvas.width*0.30;
+  const leftSide=Math.random()<0.5;
+
+  const x=leftSide
+      ? Math.random()*(safeZone-50)
+      : canvas.width-safeZone+Math.random()*(safeZone-50);
+
+  const targetY=Math.random()*(canvas.height/2)+120;
+  const color=randomColor();
+
+  rockets.push({x:x,y:canvas.height,targetY:targetY,text:text,start:Date.now(),color:color});
+}
+
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const now=Date.now();
+
+  rockets.forEach((r,i)=>{
+    const elapsed=(now-r.start)/1000;
+
+    if(elapsed<1){
+      r.y-=8;
+      ctx.fillStyle=r.color;
+      ctx.beginPath();
+      ctx.arc(r.x,r.y,3,0,Math.PI*2);
+      ctx.fill();
+    }
+    else if(elapsed<3){
+      ctx.fillStyle=r.color;
+      ctx.shadowColor=r.color;
+      ctx.shadowBlur=20;
+      ctx.font="bold 48px Poppins";
+      ctx.textAlign="center";
+      ctx.fillText(r.text,r.x,r.targetY);
+      ctx.shadowBlur=0;
+    }
+    else if(elapsed<6){
+      for(let j=0;j<6;j++){
+        particles.push({
+          x:r.x,
+          y:r.targetY,
+          angle:Math.random()*Math.PI*2,
+          speed:Math.random()*4+2,
+          life:80,
+          color:r.color
+        });
+      }
+    }
+    else{
+      rockets.splice(i,1);
+    }
+  });
+
+  particles.forEach((p,i)=>{
+    p.x+=Math.cos(p.angle)*p.speed;
+    p.y+=Math.sin(p.angle)*p.speed+0.3;
+    p.life--;
+    p.speed*=0.98;
+
+    ctx.globalAlpha=p.life/80;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha=1;
+
+    if(p.life<=0) particles.splice(i,1);
+  });
+
+  requestAnimationFrame(draw);
+}
+
+setInterval(launchFirework,5000);
+draw();
+</script>
+
+</body>
+</html>
